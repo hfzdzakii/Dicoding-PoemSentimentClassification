@@ -1,0 +1,40 @@
+===============================
+Menggunakan model best_model_hartmann_0.2_gru.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_hartmann_0.2_lstm.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_hartmann_0.1_gru.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_hartmann_0.1_lstm.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_savani_0.2_gru.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_savani_0.2_lstm.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_savani_0.1_gru.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
+===============================
+Menggunakan model best_model_savani_0.1_lstm.keras
+Poem 1 - Actual : joy - Predicted : joy
+Poem 2 - Actual : sadness - Predicted : sadness
+Poem 3 - Actual : anger - Predicted : anger
