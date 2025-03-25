@@ -10,29 +10,31 @@ from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
 from nltk.corpus import words
 from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
+from tensorflow.keras.regularizers import l2
 from tensorflow.keras import Model # type: ignore
 from tensorflow.data import Dataset # type: ignore
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Input, Lambda, Embedding, GRU, Bidirectional # type: ignore
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Input, Lambda, Embedding, GRU, BatchNormalization # type: ignore
 from tensorflow.keras.optimizers import Adam # type: ignore
 from tensorflow.keras.preprocessing.text import Tokenizer # type: ignore
 from tensorflow.keras.utils import pad_sequences # type: ignore
 from tensorflow.keras.callbacks import EarlyStopping , ModelCheckpoint # type: ignore
 
-nltk.download('words')
-nltk.download('punkt_tab')
-nltk.download('wordnet')
-nltk.download('stopwords') 
-nltk.download('averaged_perceptron_tagger_eng')
+# nltk.download('words')
+# nltk.download('punkt_tab')
+# nltk.download('wordnet')
+# nltk.download('stopwords') 
+# nltk.download('averaged_perceptron_tagger_eng')
 
 class DicodingProject1:
-    def __init__(self, TEST_SIZE, EPOCHS, MODE, CLASS, DATASET):
+    def __init__(self, TEST_SIZE, EPOCHS, MODE, CLASS, DATASET, MAX_LENGTH=128):
         self.TEST_SIZE = TEST_SIZE
         self.BATCH_SIZE = 64
         self.EPOCHS = EPOCHS
         self.MODE = MODE
-        self.MAX_LENGTH = 128
+        self.MAX_LENGTH = MAX_LENGTH
         self.CLASS = CLASS
         self.DATASET = DATASET
         
@@ -84,6 +86,19 @@ class DicodingProject1:
         X_resampled, y_resampled = ros.fit_resample(X, y)
         return X_resampled, y_resampled
     
+    def underOver(self, X, y, mainPointSampler):
+        label = pd.Series(y).value_counts()
+        target_sample_size = int(label[mainPointSampler])
+        ratioU={cls: min(target_sample_size, count) for cls, count in label.items()}
+        print("Ratio UnderSampling, ", ratioU)
+        ratioO={cls: target_sample_size for cls, count in label.items()}
+        print("Ratio OverSampling, ", ratioO)
+        rus = RandomUnderSampler(sampling_strategy=ratioU, random_state=42)
+        ros = RandomOverSampler(sampling_strategy=ratioO, random_state=42)
+        X_res, y_res = rus.fit_resample(X, y)
+        X_resampled, y_resampled = ros.fit_resample(X_res, y_res)
+        return X_resampled, y_resampled
+    
     def prepareDf(self, df):
         custom_dict = self.loadCustomDict('custom_vocab.txt')
         encoder = LabelEncoder()
@@ -93,6 +108,11 @@ class DicodingProject1:
         X = df[['poem']]
         y = df['label']
         y = encoder.fit_transform(y)
+        # if self.DATASET == 'deepseek_clean':
+        #     print("Underover")
+        #     X, y = self.underOver(X, y, 1)
+        # else:
+        #     print("Oversampling")
         X, y = self.resamplingOversampling(X, y)
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=self.TEST_SIZE, random_state=42, stratify=y)
         # X_train, y_train = resamplingOversampling(X_train, y_train)

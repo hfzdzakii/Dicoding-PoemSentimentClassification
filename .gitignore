@@ -1,5 +1,4 @@
-dataset/
-model/
-poem/
-tokenizer/
+dataset/*.csv
+model/*.keras
+tokenizer/*.pkl
 *.json
