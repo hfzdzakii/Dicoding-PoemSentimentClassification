@@ -2,3 +2,4 @@ dataset/*.csv
 model/*.keras
 tokenizer/*.pkl
 *.json
+*d.txt

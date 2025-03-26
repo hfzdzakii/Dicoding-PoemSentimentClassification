@@ -4,6 +4,7 @@ import re
 import unicodedata
 import contractions
 import nltk
+import numpy as np
 import tensorflow as tf
 import pickle
 from nltk.stem import WordNetLemmatizer
@@ -16,11 +17,11 @@ from sklearn.preprocessing import LabelEncoder
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras import Model # type: ignore
 from tensorflow.data import Dataset # type: ignore
-from tensorflow.keras.layers import LSTM, Dense, Dropout, Input, Lambda, Embedding, GRU, BatchNormalization # type: ignore
+from tensorflow.keras.layers import LSTM, Dense, Dropout, Input, Lambda, Embedding, GRU, BatchNormalization, Bidirectional # type: ignore
 from tensorflow.keras.optimizers import Adam # type: ignore
 from tensorflow.keras.preprocessing.text import Tokenizer # type: ignore
 from tensorflow.keras.utils import pad_sequences # type: ignore
-from tensorflow.keras.callbacks import EarlyStopping , ModelCheckpoint # type: ignore
+from tensorflow.keras.callbacks import EarlyStopping , ModelCheckpoint, ReduceLROnPlateau # type: ignore
 
 # nltk.download('words')
 # nltk.download('punkt_tab')
@@ -120,18 +121,25 @@ class DicodingProject1:
         X_val = X_val['poem'].values.flatten().tolist() #
         return X_train, X_val, y_train, y_val
 
-    def buildModel(self, mode, word_counts=256):
+    def buildModel(self, mode, word_counts=256, embedding_matrix=None, embedding_dim=300):
         input_layer = Input(shape=(self.MAX_LENGTH,), name='input_layer')
-        output = Embedding(input_dim=word_counts, output_dim=word_counts//2, name='embedding_layer')(input_layer)
+        if embedding_matrix is not None:
+            output = Embedding(input_dim=word_counts, output_dim=embedding_dim, weights=[embedding_matrix], trainable=True, name='embedding_layer')(input_layer)
+        else:
+            output = Embedding(input_dim=word_counts, output_dim=word_counts//2, name='embedding_layer')(input_layer)
         if mode=='lstm':
-            x = LSTM(64, return_sequences=False)(output)
+            # x = LSTM(64, return_sequences=False)(output)
+            x = Bidirectional(LSTM(128, return_sequences=True, kernel_regularizer=l2(0.01)))(output)
+            x = Bidirectional(LSTM(64, return_sequences=False))(output)
         if mode=='gru':
             x = GRU(64, return_sequences=False)(output)
+        x = BatchNormalization()(x)
         x = Dropout(0.5)(x)
+        x = Dense(32, activation='relu')(x)
         x = Dense(16, activation='relu')(x)
         output = Dense(self.CLASS, activation='softmax')(x)
         model = Model(inputs=input_layer, outputs=output)
-        model.compile(optimizer=Adam(learning_rate=0.0001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        model.compile(optimizer=Adam(learning_rate=0.0001, clipnorm=1.0), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
         return model
 
     def createDataset(self, data, labels):
@@ -165,6 +173,31 @@ class DicodingProject1:
         with open(f"./tokenizer/tokenizer_{self.DATASET}_{self.TEST_SIZE}_{self.MODE}.pkl", "wb") as f:
             pickle.dump(tokenizer, f)
         return X_train_padded, X_val_padded, len(word_counts)
+    
+    def gloveTokenizer(self, X_train, X_val, glove_path='glove.6B.300d.txt', embedding_dim=300):
+        tokenizer = Tokenizer(oov_token='<OOV>')
+        tokenizer.fit_on_texts(X_train)
+        X_train_sequence = tokenizer.texts_to_sequences(X_train)
+        X_val_sequence = tokenizer.texts_to_sequences(X_val)
+        X_train_padded = pad_sequences(X_train_sequence, maxlen=self.MAX_LENGTH)
+        X_val_padded = pad_sequences(X_val_sequence, maxlen=self.MAX_LENGTH)
+        embeddings_index = {}
+        with open(glove_path, encoding='utf-8') as f:
+            for line in f:
+                word, coefs = line.split(maxsplit=1)
+                coefs = np.fromstring(coefs, 'f', sep=' ')
+                embeddings_index[word] = coefs
+        vocab_size = len(tokenizer.word_index) + 1
+        embedding_matrix = np.zeros((vocab_size, embedding_dim))
+        for word, i in tokenizer.word_index.items():
+            embedding_vector = embeddings_index.get(word)
+            if embedding_vector is not None:
+                embedding_matrix[i] = embedding_vector
+            else:
+                embedding_matrix[i] = np.random.normal(scale=0.6, size=(embedding_dim,))
+        with open(f"./tokenizer/tokenizer_{self.DATASET}_{self.TEST_SIZE}_{self.MODE}.pkl", "wb") as f:
+            pickle.dump(tokenizer, f)
+        return X_train_padded, X_val_padded, vocab_size, embedding_matrix
 
     def kerasTokenizer2(self, text):
         with open(f"./tokenizer/tokenizer_{self.DATASET}_{self.TEST_SIZE}_{self.MODE}.pkl", "rb") as f:
