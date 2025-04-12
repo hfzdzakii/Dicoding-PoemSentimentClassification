@@ -1,11 +1,15 @@
 Akurasi untuk skema hartmann, split test 20.0%, model lstm adalah 87.99540493968983% 
 Akurasi untuk skema hartmann, split test 20.0%, model gru adalah 83.19931074095348% 
-Akurasi untuk skema hartmann, split test 10.0%, model lstm adalah 88.51234922458357% 
+Akurasi untuk skema hartmann, split test 10.0%, model lstm adalah 88.51234922458357% -
 Akurasi untuk skema hartmann, split test 10.0%, model gru adalah 87.36358414704193% 
 Akurasi untuk skema savani, split test 20.0%, model gru adalah 84.37177280550775% 
 Akurasi untuk skema savani, split test 20.0%, model lstm adalah 85.09466437177281% 
 Akurasi untuk skema savani, split test 10.0%, model gru adalah 85.13420509291122% 
-Akurasi untuk skema savani, split test 10.0%, model lstm adalah 88.09359944941501%
+Akurasi untuk skema savani, split test 10.0%, model lstm adalah 88.09359944941501% -
 Akurasi untuk skema deepseek_clean, split test 20.0%, model lstm adalah 68.93203883495146% 
 Akurasi untuk skema deepseek_clean, split test 20.0%, model lstm adalah 73.44272257672439% 
 Akurasi untuk skema deepseek, split test 10.0%, model lstm adalah 71.32442284325637% 
+
+Akurasi untuk skema deepseek, split test 10.0%, model lstm adalah 73.34739803094233% 
+Akurasi untuk skema hartmann, split test 10.0%, model lstm adalah 91.31497112394491% 
+Akurasi untuk skema savani, split test 10.0%, model lstm adalah 90.11494252873563% 

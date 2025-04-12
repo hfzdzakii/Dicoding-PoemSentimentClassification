@@ -1,4 +1,5 @@
 dataset/*.csv
+dataset/*.zip
 model/*.keras
 tokenizer/*.pkl
 *.json
