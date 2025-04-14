@@ -11,5 +11,4 @@ tensorflow==2.18.0
 tqdm==4.67.1
 tf_keras==2.18.0
 keras==3.8.0
-contractions==0.1.73
-pickleshare==0.7.5
+contractions2
