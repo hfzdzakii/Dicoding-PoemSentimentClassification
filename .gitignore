@@ -4,3 +4,4 @@ model/*.keras
 tokenizer/*.pkl
 *.json
 *d.txt
+.env
